@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: express-boilerplate-postgres
+    container_name: ven-ledger-backend-postgres
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -21,8 +21,8 @@ services:
     build:
       context: .
       target: dev
-    image: express-boilerplate-ts:dev
-    container_name: express-boilerplate-app
+    image: ven-ledger-backend:dev
+    container_name: ven-ledger-backend
     depends_on:
       postgres:
         condition: service_healthy
