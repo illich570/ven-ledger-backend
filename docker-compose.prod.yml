@@ -1,0 +1,16 @@
+services:
+  app:
+    image: express-boilerplate-ts:prod
+    build:
+      context: .
+      target: runner
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT:-3000}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FILE: ${LOG_FILE:-server.log}
+    env_file:
+      - .env
+    ports:
+      - '${PORT:-3000}:3000'
+    restart: unless-stopped
