@@ -1,6 +1,6 @@
 services:
   app:
-    image: express-boilerplate-ts:prod
+    image: ven-ledger-backend:prod
     build:
       context: .
       target: runner
