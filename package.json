@@ -68,7 +68,8 @@
       "tar": "^7.5.4",
       "glob": "^10.5.0",
       "cross-spawn": "^7.0.5",
-      "body-parser": "^2.2.1"
+      "body-parser": "^2.2.1",
+      "esbuild": "^0.25.0"
     }
   }
 }
