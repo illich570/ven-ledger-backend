@@ -55,7 +55,7 @@ jobs:
         env:
           # Database URL is provided by Railway environment
           DB_URL: ${{ secrets.DB_URL_STAGING }}
-          NODE_ENV: staging
+          NODE_ENV: production
         run: |
           echo "Running database migrations for staging..."
           pnpm db:migrate || exit 1
