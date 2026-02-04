@@ -50,3 +50,9 @@ Use `pnpm` (see `packageManager` in `package.json`).
   `dotenv` + `zod`.
 - Required variables: `NODE_ENV`, `PORT`, `LOG_LEVEL`, `LOG_FILE`. Consider
   using a local `.env` file for development.
+
+## Instructions for Development & Learning
+
+- Every question related to implement, updgrade, fix, or improve needs to be
+  aimed to comply an clean archictecture, in the current context (typescript,
+  drizzle, expressjs)

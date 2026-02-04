@@ -5,12 +5,9 @@ services:
       context: .
       target: runner
     environment:
+      # Container-specific: In production, other variables are injected by Railway
       NODE_ENV: production
-      PORT: ${PORT:-3000}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-      LOG_FILE: ${LOG_FILE:-server.log}
-    env_file:
-      - .env
+    # NO env_file in production - use platform-provided environment variables
     ports:
-      - '${PORT:-3000}:3000'
+      - '3000:3000'
     restart: unless-stopped
