@@ -23,6 +23,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "imports": {
+    "#config/*.js": "./dist/config/*.js",
+    "#infrastructure/*.js": "./dist/infrastructure/*.js",
+    "#presentation/*.js": "./dist/presentation/*.js"
+  },
   "packageManager": "pnpm@10.28.1",
   "dependencies": {
     "dotenv": "^17.2.3",

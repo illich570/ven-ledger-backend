@@ -10,7 +10,9 @@
     "noUncheckedIndexedAccess": true,
     "outDir": "dist",
     "paths": {
-      "~/*": ["./src/*"]
+      "#config/*.js": ["./src/config/*.ts"],
+      "#infrastructure/*.js": ["./src/infrastructure/*.ts"],
+      "#presentation/*.js": ["./src/presentation/*.ts"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
