@@ -1,10 +1,12 @@
 import { pinoHttp } from 'pino-http';
 
 import { createServer } from './app.js';
+import { initializeDatabase } from './infrastructure/database/database.js';
 import logger from './infrastructure/logger/pino-logger.js';
 import { errorHandler } from './presentation/middleware/error-handler.js';
 import { healthRouter } from './presentation/routes/health.routes.js';
 const port = Number(process.env.PORT) || 3000;
+await initializeDatabase();
 const app = createServer();
 app.use(
   pinoHttp({

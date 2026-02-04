@@ -3,15 +3,15 @@ services:
     image: postgres:16-alpine
     container_name: ven-ledger-backend-postgres
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ven_ledger
     ports:
-      - '${DB_PORT}:5432'
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DB_NAME}']
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d ven_ledger']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -27,14 +27,12 @@ services:
       postgres:
         condition: service_healthy
     environment:
+      # Container-specific configuration (not meant to be overridden via .env)
+      DB_URL: postgresql://postgres:postgres@postgres:5432/ven_ledger
       NODE_ENV: development
-      PORT: ${PORT}
-      LOG_LEVEL: ${LOG_LEVEL}
-      LOG_FILE: ${LOG_FILE}
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
     env_file:
-      - .env
-    command: pnpm dev
+      - .env # PORT, LOG_LEVEL, LOG_FILE - developer-configurable
+    entrypoint: ['/app/scripts/docker-entrypoint.sh']
     volumes:
       - .:/app
       - /app/node_modules
