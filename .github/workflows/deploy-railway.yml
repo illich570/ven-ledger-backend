@@ -90,9 +90,7 @@ jobs:
           docker run --rm \
             -e RAILWAY_TOKEN \
             ghcr.io/railwayapp/cli:latest \
-            railway up --image "$IMAGE_NAME:$IMAGE_SHA" \
-              --service="$RAILWAY_SERVICE" \
-              --detach
+            sh -c "railway environment edit --service-config '$RAILWAY_SERVICE' source.image '$IMAGE_NAME:$IMAGE_SHA' --message 'Deploy $IMAGE_SHA' && railway redeploy -s '$RAILWAY_SERVICE' -y"
 
       - name: Wait for deployment to be ready
         run: sleep 30
@@ -187,6 +185,4 @@ jobs:
           docker run --rm \
             -e RAILWAY_TOKEN \
             ghcr.io/railwayapp/cli:latest \
-            railway up --image "$IMAGE_NAME:$IMAGE_SHA" \
-              --service="$RAILWAY_SERVICE" \
-              --detach
+            sh -c "railway environment edit --service-config '$RAILWAY_SERVICE' source.image '$IMAGE_NAME:$IMAGE_SHA' --message 'Deploy $IMAGE_SHA' && railway redeploy -s '$RAILWAY_SERVICE' -y"
