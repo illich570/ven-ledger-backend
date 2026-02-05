@@ -16,8 +16,8 @@ Testing deployment!
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [pnpm](https://pnpm.io/) (package manager)
+- [Node.js](https://nodejs.org/) (v20 or higher, v25 recommended for production)
+- [pnpm](https://pnpm.io/) v10.28.1 (package manager)
 
 ## Quick Start
 
@@ -57,16 +57,22 @@ Testing deployment!
 The application uses the following environment variables. Configure them in your
 `.env` file for local development:
 
-| Variable    | Description             | Example                                   |
-| ----------- | ----------------------- | ----------------------------------------- |
-| `NODE_ENV`  | Application environment | `development` \| `test` \| `production`   |
-| `PORT`      | Server listening port   | `3000`                                    |
-| `LOG_LEVEL` | Logging verbosity level | `debug` \| `info` \| `warn` \| `error`    |
-| `LOG_FILE`  | Path to log file        | `server.log`                              |
-| `DB_URL`    | PostgreSQL connection   | `postgresql://user:pass@host:5432/dbname` |
+| Variable       | Description             | Example                                     |
+| -------------- | ----------------------- | ------------------------------------------- |
+| `NODE_ENV`     | Application environment | `development` \| `test` \| `production`     |
+| `PORT`         | Server listening port   | `3000` (Railway injects this automatically) |
+| `LOG_LEVEL`    | Logging verbosity level | `debug` \| `info` \| `warn` \| `error`      |
+| `LOG_FILE`     | Path to log file        | `server.log`                                |
+| `DB_URL`       | PostgreSQL connection   | `postgresql://user:pass@host:5432/dbname`   |
+| `DATABASE_URL` | PostgreSQL connection   | `postgresql://user:pass@host:5432/dbname`   |
 
-**Note**: Container-specific variables (`NODE_ENV`, `DB_URL` for Docker) are
-defined in `docker-compose.yml`.
+**Note**:
+
+- `DATABASE_URL` and `DB_URL` are both accepted (Railway uses `DATABASE_URL` by
+  default)
+- Container-specific variables (`NODE_ENV`, `DB_URL` for Docker) are defined in
+  `docker-compose.yml`
+- `PORT` is automatically injected by Railway in production deployments
 
 ### Example `.env` file
 
@@ -160,15 +166,27 @@ docker-compose -f docker-compose.prod.yml up -d
 ### Build Docker Image
 
 ```bash
-docker build -t express-boilerplate .
-docker run -p 3000:3000 --env-file .env express-boilerplate
+docker build -t ven-ledger-backend .
+docker run -p 3000:3000 --env-file .env ven-ledger-backend
 ```
+
+**Note**: The CI/CD pipeline builds and pushes images as
+`express-boilerplate-ts` to Docker Hub.
 
 ## API Endpoints
 
 ### Health Check
 
 - `GET /health` - Returns server health status
+
+**Example Response:**
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-02-04T12:34:56.789Z"
+}
+```
 
 ## Testing
 
@@ -243,6 +261,41 @@ variables → Actions):
 
 **Important**: Database migrations run automatically during deployment. Ensure
 your migrations are backward-compatible when deploying to production.
+
+#### Optional Secrets
+
+| Secret                   | Description                                         |
+| ------------------------ | --------------------------------------------------- |
+| `DEPLOYMENT_WEBHOOK_URL` | Webhook URL for deployment notifications (optional) |
+
+## Railway Setup
+
+To deploy this application on Railway:
+
+1. **Create a Railway project**
+   - Go to [Railway](https://railway.app) and create a new project
+   - Connect your GitHub repository
+
+2. **Add PostgreSQL addon**
+   - In your Railway project, click "New" → "Database" → "Add PostgreSQL"
+   - Railway automatically generates `DATABASE_URL` environment variable
+   - The application accepts both `DATABASE_URL` and `DB_URL`
+
+3. **Configure environment variables**
+   - Go to your service settings → Variables
+   - Add the following variables:
+     - `LOG_LEVEL` (e.g., `info` for production)
+     - `LOG_FILE` (e.g., `server.log`)
+     - `NODE_ENV=production`
+   - `PORT` is automatically injected by Railway (no need to set it)
+   - `DATABASE_URL` is automatically set if you added the PostgreSQL addon
+
+4. **Deploy**
+   - Railway will automatically deploy on pushes to `main` (if configured)
+   - Or trigger manual deployments from the Railway dashboard
+
+**PostgreSQL Version**: The project uses PostgreSQL 16 (as defined in
+`docker-compose.yml`). Railway's PostgreSQL addon is compatible.
 
 ## Database Migrations
 
