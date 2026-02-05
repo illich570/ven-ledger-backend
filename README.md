@@ -170,8 +170,8 @@ docker build -t ven-ledger-backend .
 docker run -p 3000:3000 --env-file .env ven-ledger-backend
 ```
 
-**Note**: The CI/CD pipeline builds and pushes images as
-`express-boilerplate-ts` to Docker Hub.
+**Note**: The CI/CD pipeline builds and pushes images as `ven-ledger-backend` to
+Docker Hub.
 
 ## API Endpoints
 
