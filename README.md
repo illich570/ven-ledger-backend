@@ -57,18 +57,21 @@ Testing deployment!
 The application uses the following environment variables. Configure them in your
 `.env` file for local development:
 
-| Variable        | Description             | Example                                   |
-| --------------- | ----------------------- | ----------------------------------------- |
-| `NODE_ENV`      | Application environment | `development` \| `test` \| `production`   |
-| `PORT`           | Server listening port   | `3000` (Railway injects this automatically) |
-| `LOG_LEVEL`      | Logging verbosity level | `debug` \| `info` \| `warn` \| `error`    |
-| `LOG_FILE`       | Path to log file        | `server.log`                              |
-| `DB_URL`         | PostgreSQL connection   | `postgresql://user:pass@host:5432/dbname` |
-| `DATABASE_URL`   | PostgreSQL connection   | `postgresql://user:pass@host:5432/dbname` |
+| Variable       | Description             | Example                                     |
+| -------------- | ----------------------- | ------------------------------------------- |
+| `NODE_ENV`     | Application environment | `development` \| `test` \| `production`     |
+| `PORT`         | Server listening port   | `3000` (Railway injects this automatically) |
+| `LOG_LEVEL`    | Logging verbosity level | `debug` \| `info` \| `warn` \| `error`      |
+| `LOG_FILE`     | Path to log file        | `server.log`                                |
+| `DB_URL`       | PostgreSQL connection   | `postgresql://user:pass@host:5432/dbname`   |
+| `DATABASE_URL` | PostgreSQL connection   | `postgresql://user:pass@host:5432/dbname`   |
 
-**Note**: 
-- `DATABASE_URL` and `DB_URL` are both accepted (Railway uses `DATABASE_URL` by default)
-- Container-specific variables (`NODE_ENV`, `DB_URL` for Docker) are defined in `docker-compose.yml`
+**Note**:
+
+- `DATABASE_URL` and `DB_URL` are both accepted (Railway uses `DATABASE_URL` by
+  default)
+- Container-specific variables (`NODE_ENV`, `DB_URL` for Docker) are defined in
+  `docker-compose.yml`
 - `PORT` is automatically injected by Railway in production deployments
 
 ### Example `.env` file
@@ -167,7 +170,8 @@ docker build -t ven-ledger-backend .
 docker run -p 3000:3000 --env-file .env ven-ledger-backend
 ```
 
-**Note**: The CI/CD pipeline builds and pushes images as `express-boilerplate-ts` to Docker Hub.
+**Note**: The CI/CD pipeline builds and pushes images as
+`express-boilerplate-ts` to Docker Hub.
 
 ## API Endpoints
 
@@ -260,8 +264,8 @@ your migrations are backward-compatible when deploying to production.
 
 #### Optional Secrets
 
-| Secret                  | Description                                    |
-| ----------------------- | ---------------------------------------------- |
+| Secret                   | Description                                         |
+| ------------------------ | --------------------------------------------------- |
 | `DEPLOYMENT_WEBHOOK_URL` | Webhook URL for deployment notifications (optional) |
 
 ## Railway Setup
@@ -290,7 +294,8 @@ To deploy this application on Railway:
    - Railway will automatically deploy on pushes to `main` (if configured)
    - Or trigger manual deployments from the Railway dashboard
 
-**PostgreSQL Version**: The project uses PostgreSQL 16 (as defined in `docker-compose.yml`). Railway's PostgreSQL addon is compatible.
+**PostgreSQL Version**: The project uses PostgreSQL 16 (as defined in
+`docker-compose.yml`). Railway's PostgreSQL addon is compatible.
 
 ## Database Migrations
 
