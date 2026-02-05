@@ -224,15 +224,15 @@ The project includes GitHub Actions workflows for:
 1. Push to `main` triggers CI pipeline
 2. CI builds and pushes Docker image
 3. On success, triggers staging deployment
-4. Runs database migrations against staging DB
+4. GitHub Actions runs migrations against Supabase
 5. Redeploys Railway staging service
 6. Performs health check
 
 **Production (version tags):**
 
 1. Push tag `v*` triggers production deployment
-2. Runs database migrations against production DB (⚠️ with warning)
-3. Tags and pushes production Docker image
+2. Tags and pushes production Docker image
+3. Railway pulls image and runs pre-deploy migration (internal URL)
 4. Redeploys Railway production service
 
 ### GitHub Actions Secrets
@@ -249,15 +249,18 @@ variables → Actions):
 
 #### Required for Railway Deployment
 
-| Secret                        | Description                         |
-| ----------------------------- | ----------------------------------- |
-| `RAILWAY_TOKEN`               | Railway API token (production)      |
-| `RAILWAY_TOKEN_STAGING`       | Railway API token (staging)         |
-| `RAILWAY_SERVICE`             | Railway service name/ID             |
-| `RAILWAY_SERVICE_URL`         | Production service health check URL |
-| `RAILWAY_SERVICE_URL_STAGING` | Staging service health check URL    |
-| `DB_URL_PRODUCTION`           | Production database URL             |
-| `DB_URL_STAGING`              | Staging database URL                |
+| Secret                        | Description                                             |
+| ----------------------------- | ------------------------------------------------------- |
+| `RAILWAY_TOKEN`               | Railway API token (production)                          |
+| `RAILWAY_TOKEN_STAGING`       | Railway API token (staging)                             |
+| `RAILWAY_SERVICE`             | Railway service name/ID                                 |
+| `RAILWAY_SERVICE_URL`         | Production service health check URL                     |
+| `RAILWAY_SERVICE_URL_STAGING` | Staging service health check URL                        |
+| `DB_URL_STAGING`              | Staging database URL (Supabase, used by GitHub Actions) |
+
+**Note**: Production migrations use Railway's pre-deploy command with internal
+URL (configured in Railway dashboard), so `DB_URL_PRODUCTION` is not needed in
+GitHub secrets.
 
 **Important**: Database migrations run automatically during deployment. Ensure
 your migrations are backward-compatible when deploying to production.
@@ -313,14 +316,32 @@ Migrations are managed by **Drizzle Kit** and follow this workflow:
 3. Commit migration files to Git
 4. On deployment, migrations run automatically
 
+### Hybrid Migration Architecture
+
+Migrations run differently per environment due to infrastructure constraints:
+
+| Environment | DB Provider      | Migration Strategy | Why                                      |
+| ----------- | ---------------- | ------------------ | ---------------------------------------- |
+| Staging     | Supabase         | GitHub Actions     | Supabase has valid SSL certs, works fine |
+| Production  | Railway Postgres | Railway Pre-Deploy | Uses internal URL, avoids egress costs   |
+
+**Production uses `railway.toml` pre-deploy command** because:
+
+- Railway Postgres uses self-signed SSL certificates → `ECONNRESET` from
+  external connections
+- Internal URL (`postgres.railway.internal`) has no egress costs
+- Migration is atomic with deploy (if fails, deploy is cancelled)
+
+See `railway.toml` for the pre-deploy configuration.
+
 **Manual Migration (if needed):**
 
 ```bash
-# Staging
+# Staging (Supabase)
 DB_URL="your-staging-db-url" pnpm db:migrate
 
-# Production (⚠️ use with caution)
-DB_URL="your-production-db-url" NODE_ENV=production pnpm db:migrate
+# Production - prefer Railway pre-deploy, but if manual needed:
+DB_URL="your-production-internal-url" NODE_ENV=production pnpm db:migrate
 ```
 
 ## License

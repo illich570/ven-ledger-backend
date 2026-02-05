@@ -111,27 +111,6 @@ jobs:
           echo "Health check failed after 10 attempts"
           exit 1
 
-      - name: Notify deployment success
-        if: success()
-        run: |
-          echo "✅ Staging deployment successful"
-          echo "Service URL: $SERVICE_URL"
-          if [ -n "${{ secrets.DEPLOYMENT_WEBHOOK_URL }}" ]; then
-            curl -X POST "${{ secrets.DEPLOYMENT_WEBHOOK_URL }}" \
-              -H "Content-Type: application/json" \
-              -d "{\"status\":\"success\",\"environment\":\"staging\",\"url\":\"$SERVICE_URL\",\"commit\":\"${{ github.event.workflow_run.head_sha }}\"}" || true
-          fi
-
-      - name: Notify deployment failure
-        if: failure()
-        run: |
-          echo "❌ Staging deployment failed"
-          if [ -n "${{ secrets.DEPLOYMENT_WEBHOOK_URL }}" ]; then
-            curl -X POST "${{ secrets.DEPLOYMENT_WEBHOOK_URL }}" \
-              -H "Content-Type: application/json" \
-              -d "{\"status\":\"failure\",\"environment\":\"staging\",\"commit\":\"${{ github.event.workflow_run.head_sha }}\"}" || true
-          fi
-
   # PRODUCTION: when a version tag is pushed (promotes latest image from staging)
   deploy-prod:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
@@ -139,6 +118,8 @@ jobs:
     environment: production
 
     env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
       IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/ven-ledger-backend
       TAG_NAME: ${{ github.ref_name }}
       SERVICE_URL: ${{ secrets.RAILWAY_SERVICE_URL }}
@@ -147,30 +128,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10.28.1
-          run_install: false
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 25
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run database migrations (production)
-        env:
-          # Database URL is provided by Railway environment
-          DB_URL: ${{ secrets.DB_URL_PRODUCTION }}
-          NODE_ENV: production
-        run: |
-          echo "🔄 Running database migrations for production..."
-          echo "⚠️  This will apply pending migrations to the production database"
-          pnpm db:migrate || exit 1
-          echo "✅ Migrations completed successfully"
+      # NOTE: Production migrations are handled by Railway pre-deploy command (railway.toml)
+      # This uses the internal URL (postgres.railway.internal) with no egress costs
+      # and avoids SSL issues with Railway's self-signed certificates
 
       - name: Extract short SHA
         id: sha
