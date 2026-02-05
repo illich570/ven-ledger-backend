@@ -23,8 +23,14 @@ CMD ["pnpm", "dev"]
 
 FROM base AS runner
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm install --frozen-lockfile --prod
+# Include ALL deps (not --prod) so drizzle-kit is available for Railway pre-deploy migrations
+RUN pnpm install --frozen-lockfile
 COPY --from=build /app/dist ./dist
+# Copy source files (drizzle.config.ts imports from ./src/config/database-config)
+COPY src ./src
+# Copy drizzle config and migrations for pre-deploy command
+COPY drizzle.config.ts ./
+COPY drizzle ./drizzle
 RUN chown -R node:node /app
 USER node
 EXPOSE 3000
