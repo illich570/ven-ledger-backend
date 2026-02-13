@@ -1,4 +1,0 @@
-[deploy]
-# Staging: migrate runs in GitHub Actions; prod: migrate runs here (internal DB URL).
-# Seed runs here for both; idempotent. Set SEED_USER_* for empty DB.
-preDeployCommand = "pnpm db:migrate && pnpm db:seed"
