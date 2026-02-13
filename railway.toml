@@ -1,5 +1,4 @@
 [deploy]
-# Run database migrations before starting the app
-# This executes INSIDE Railway's private network with access to internal URLs
-# Only used for PRODUCTION (Railway Postgres) - Staging uses GitHub Actions (Supabase)
-preDeployCommand = "pnpm db:migrate"
+# Staging: migrate runs in GitHub Actions; prod: migrate runs here (internal DB URL).
+# Seed runs here for both; idempotent. Set SEED_USER_* for empty DB.
+preDeployCommand = "pnpm db:migrate && pnpm db:seed"

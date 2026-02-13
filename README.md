@@ -110,8 +110,10 @@ or omit seed env vars.
 **Production:** Migrations must run **before** the app receives traffic. Use one
 of:
 
-- **Railway:** `railway.toml` sets `preDeployCommand = "pnpm db:migrate"`.
-- **GitHub Actions (staging):** workflow runs `pnpm db:migrate` before deploy.
+- **Railway (staging and production):** `railway.toml` runs
+  `pnpm db:migrate && pnpm db:seed` before each deploy. Seed is idempotent; set
+  `SEED_USER_EMAIL`, `SEED_USER_PASSWORD`, and `SEED_USER_NAME` in the service
+  variables to create the initial user on an empty database.
 - **Other platforms:** run `pnpm db:migrate` in your pipeline before starting
   the app.
 
@@ -253,9 +255,9 @@ The project includes GitHub Actions workflows for:
 1. Push to `main` triggers CI pipeline
 2. CI builds and pushes Docker image
 3. On success, triggers staging deployment
-4. GitHub Actions runs migrations against Supabase
-5. Redeploys Railway staging service
-6. Performs health check
+4. Redeploys Railway staging service (Railway runs migrate + seed via
+   pre-deploy)
+5. Performs health check
 
 **Production (version tags):**
 
@@ -278,14 +280,14 @@ variables → Actions):
 
 #### Required for Railway Deployment
 
-| Secret                        | Description                                             |
-| ----------------------------- | ------------------------------------------------------- |
-| `RAILWAY_TOKEN`               | Railway API token (production)                          |
-| `RAILWAY_TOKEN_STAGING`       | Railway API token (staging)                             |
-| `RAILWAY_SERVICE`             | Railway service name/ID                                 |
-| `RAILWAY_SERVICE_URL`         | Production service health check URL                     |
-| `RAILWAY_SERVICE_URL_STAGING` | Staging service health check URL                        |
-| `DB_URL_STAGING`              | Staging database URL (Supabase, used by GitHub Actions) |
+| Secret                        | Description                                                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `RAILWAY_TOKEN`               | Railway API token (production)                                                                               |
+| `RAILWAY_TOKEN_STAGING`       | Railway API token (staging)                                                                                  |
+| `RAILWAY_SERVICE`             | Railway service name/ID                                                                                      |
+| `RAILWAY_SERVICE_URL`         | Production service health check URL                                                                          |
+| `RAILWAY_SERVICE_URL_STAGING` | Staging service health check URL                                                                             |
+| (Staging DB)                  | Set `DB_URL` or `DATABASE_URL` in Railway staging service (e.g. Supabase) so pre-deploy can run migrate/seed |
 
 **Note**: Production migrations use Railway's pre-deploy command with internal
 URL (configured in Railway dashboard), so `DB_URL_PRODUCTION` is not needed in
@@ -321,6 +323,9 @@ To deploy this application on Railway:
      - `NODE_ENV=production`
    - `PORT` is automatically injected by Railway (no need to set it)
    - `DATABASE_URL` is automatically set if you added the PostgreSQL addon
+   - Optional (for initial user on empty DB): `SEED_USER_EMAIL`,
+     `SEED_USER_PASSWORD`, `SEED_USER_NAME` — pre-deploy runs `pnpm db:seed`; if
+     the DB has no users and these are unset, the deploy will fail
 
 4. **Deploy**
    - Railway will automatically deploy on pushes to `main` (if configured)
@@ -361,7 +366,7 @@ Migrations run differently per environment due to infrastructure constraints:
 - Internal URL (`postgres.railway.internal`) has no egress costs
 - Migration is atomic with deploy (if fails, deploy is cancelled)
 
-See `railway.toml` for the pre-deploy configuration.
+See `railway.toml` for the pre-deploy configuration (migrate + seed).
 
 **Manual Migration (if needed):**
 

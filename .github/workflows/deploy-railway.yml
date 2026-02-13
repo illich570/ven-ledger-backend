@@ -45,20 +45,6 @@ jobs:
           echo "short_sha=${FULL_SHA:0:7}" >> $GITHUB_OUTPUT
           echo "Image SHA: ${FULL_SHA:0:7}"
 
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 10.28.1
-          run_install: false
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 25
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -73,16 +59,6 @@ jobs:
             exit 1
           fi
           echo "Image verified: $IMAGE_NAME:$IMAGE_SHA"
-
-      - name: Run database migrations (staging)
-        env:
-          # Database URL is provided by Railway environment
-          DB_URL: ${{ secrets.DB_URL_STAGING }}
-          NODE_ENV: production
-        run: |
-          echo "Running database migrations for staging..."
-          pnpm db:migrate || exit 1
-          echo "Migrations completed successfully"
 
       - name: Tag image for staging
         run: |
