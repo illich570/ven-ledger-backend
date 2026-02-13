@@ -1,5 +1,8 @@
 # Repository Guidelines
 
+- If a rule is not explicitly defined here, DO NOT assume modern defaults.
+- Ask or follow existing project patterns instead.
+
 ## Project Structure & Module Organization
 
 - `src/` holds the application code. Entry points are `src/server.ts` (HTTP
@@ -50,6 +53,15 @@ Use `pnpm` (see `packageManager` in `package.json`).
   `dotenv` + `zod`.
 - Required variables: `NODE_ENV`, `PORT`, `LOG_LEVEL`, `LOG_FILE`. Consider
   using a local `.env` file for development.
+- **Never use `process.env` directly.** All environment variables must pass
+  through the config schemas validated with Zod:
+  - `src/config.ts` (`validConfig`): app/server config (auth, logging, port,
+    etc.). Used when the full app runs.
+  - `src/config/database-config.ts` (`validDatabaseConfig`): DB connection and
+    seed vars. Used for DB commands (migrate, seed, studio) and when the app
+    connects to the database. Add any new env var to the appropriate schema and
+    have consumers import from the config module instead of reading
+    `process.env`.
 
 ## Instructions for Development & Learning
 

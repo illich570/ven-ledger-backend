@@ -57,53 +57,82 @@ Testing deployment!
 The application uses the following environment variables. Configure them in your
 `.env` file for local development:
 
-| Variable       | Description             | Example                                     |
-| -------------- | ----------------------- | ------------------------------------------- |
-| `NODE_ENV`     | Application environment | `development` \| `test` \| `production`     |
-| `PORT`         | Server listening port   | `3000` (Railway injects this automatically) |
-| `LOG_LEVEL`    | Logging verbosity level | `debug` \| `info` \| `warn` \| `error`      |
-| `LOG_FILE`     | Path to log file        | `server.log`                                |
-| `DB_URL`       | PostgreSQL connection   | `postgresql://user:pass@host:5432/dbname`   |
-| `DATABASE_URL` | PostgreSQL connection   | `postgresql://user:pass@host:5432/dbname`   |
+| Variable                  | Required    | Description                            | Example                                     |
+| ------------------------- | ----------- | -------------------------------------- | ------------------------------------------- |
+| `NODE_ENV`                | Yes         | Application environment                | `development` \| `test` \| `production`     |
+| `PORT`                    | Yes         | Server listening port                  | `3000` (Railway injects this automatically) |
+| `LOG_LEVEL`               | Yes         | Logging verbosity                      | `debug` \| `info` \| `warn` \| `error`      |
+| `LOG_FILE`                | Yes         | Path to log file                       | `server.log`                                |
+| `DB_URL` / `DATABASE_URL` | Yes         | PostgreSQL connection (one of the two) | `postgresql://user:pass@host:5432/dbname`   |
+| `BETTER_AUTH_SECRET`      | Yes         | Secret for signing cookies/tokens      | 32+ character random string                 |
+| `BETTER_AUTH_URL`         | Yes (prod)  | Public base URL of the app             | `https://your-app.railway.app`              |
+| `SEED_USER_EMAIL`         | Conditional | Email for initial user (empty DB only) | `admin@example.com`                         |
+| `SEED_USER_PASSWORD`      | Conditional | Password for initial user              | (secure password)                           |
+| `SEED_USER_NAME`          | Conditional | Display name for initial user          | `Admin`                                     |
+| `GOOGLE_CLIENT_ID`        | Optional    | Google OAuth client ID                 | (set with `GOOGLE_CLIENT_SECRET` to enable) |
+| `GOOGLE_CLIENT_SECRET`    | Optional    | Google OAuth client secret             | (set with `GOOGLE_CLIENT_ID` to enable)     |
 
-**Note**:
+**Notes**:
 
 - `DATABASE_URL` and `DB_URL` are both accepted (Railway uses `DATABASE_URL` by
-  default)
+  default).
 - Container-specific variables (`NODE_ENV`, `DB_URL` for Docker) are defined in
-  `docker-compose.yml`
-- `PORT` is automatically injected by Railway in production deployments
+  `docker-compose.yml`.
+- `PORT` is automatically injected by Railway in production deployments.
+- **Production**: set `BETTER_AUTH_URL` to your public app URL; omit or leave
+  `SEED_USER_*` empty after the first user exists (or use a one-shot seed
+  script).
+- **Post-deploy auth smoke**: set `SMOKE_TEST_EMAIL` and `SMOKE_TEST_PASSWORD`
+  (e.g. in GitHub Actions secrets) to run login + protected-endpoint checks
+  after deploy; if unset, the smoke step is skipped.
 
 ### Example `.env` file
 
-```env
-# Developer-configurable variables
-PORT=3000
-LOG_LEVEL=debug
-LOG_FILE=server.log
-```
+See `.env.example` for a full template including auth and optional seed
+variables.
 
 ### Database Configuration
 
 Database migrations are handled by **Drizzle Kit**. The application
 automatically runs migrations on startup in development (via Docker Compose).
 
+**Bootstrap initial user (empty DB):** The server does not run seed on startup.
+To create the first user on a fresh database, run once with `SEED_USER_EMAIL`,
+`SEED_USER_PASSWORD`, and `SEED_USER_NAME` set:
+
+```bash
+pnpm db:seed
+```
+
+Alternatively, create a user via `POST /api/auth/sign-up/email` and then remove
+or omit seed env vars.
+
+**Production:** Migrations must run **before** the app receives traffic. Use one
+of:
+
+- **Railway:** `railway.toml` sets `preDeployCommand = "pnpm db:migrate"`.
+- **GitHub Actions (staging):** workflow runs `pnpm db:migrate` before deploy.
+- **Other platforms:** run `pnpm db:migrate` in your pipeline before starting
+  the app.
+
 ## Available Scripts
 
-| Command             | Description                               |
-| ------------------- | ----------------------------------------- |
-| `pnpm dev`          | Run server in watch mode with tsx         |
-| `pnpm build`        | Compile TypeScript to `dist/`             |
-| `pnpm start`        | Run compiled server from `dist/server.js` |
-| `pnpm test`         | Run Jest tests with coverage              |
-| `pnpm lint`         | Run ESLint checks                         |
-| `pnpm lint:fix`     | Fix ESLint auto-fixable issues            |
-| `pnpm format`       | Format code with Prettier                 |
-| `pnpm format:check` | Check code formatting                     |
-| `pnpm typecheck`    | TypeScript type checking (no emit)        |
-| `pnpm db:generate`  | Generate Drizzle migration files          |
-| `pnpm db:migrate`   | Run pending database migrations           |
-| `pnpm db:studio`    | Open Drizzle Studio (database GUI)        |
+| Command                 | Description                                                                 |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `pnpm dev`              | Run server in watch mode with tsx                                           |
+| `pnpm build`            | Compile TypeScript to `dist/`                                               |
+| `pnpm start`            | Run compiled server from `dist/server.js`                                   |
+| `pnpm test`             | Run Jest tests with coverage                                                |
+| `pnpm lint`             | Run ESLint checks                                                           |
+| `pnpm lint:fix`         | Fix ESLint auto-fixable issues                                              |
+| `pnpm format`           | Format code with Prettier                                                   |
+| `pnpm format:check`     | Check code formatting                                                       |
+| `pnpm typecheck`        | TypeScript type checking (no emit)                                          |
+| `pnpm db:generate`      | Generate Drizzle migration files                                            |
+| `pnpm db:migrate`       | Run pending database migrations                                             |
+| `pnpm db:seed`          | Bootstrap initial user (one-shot; set SEED*USER*\* when DB is empty)        |
+| `pnpm db:studio`        | Open Drizzle Studio (database GUI)                                          |
+| `scripts/smoke-auth.sh` | Post-deploy auth smoke (SERVICE_URL, SMOKE_TEST_EMAIL, SMOKE_TEST_PASSWORD) |
 
 ## Project Structure
 

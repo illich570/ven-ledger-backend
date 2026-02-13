@@ -1,0 +1,25 @@
+---
+description: Auth backend context for Better Auth + Drizzle in this project
+globs: src/server.ts,src/infrastructure/auth/**/*.ts,src/infrastructure/database/schema.ts,src/presentation/middleware/**/*.ts,src/presentation/routes/**/*.ts,src/presentation/handlers/**/*.ts,docker-compose.yml,scripts/docker-entrypoint.sh
+alwaysApply: false
+---
+
+# Authentication Context (Backend)
+
+- Use Better Auth as the auth provider, configured in `src/infrastructure/auth/auth.ts`.
+- Better Auth must use Drizzle adapter with Postgres and schema tables from `src/infrastructure/database/schema.ts`.
+- Keep auth infrastructure in `src/infrastructure/auth/`; do not move auth logic into handlers/use-cases directly.
+- Mount Better Auth handler in `src/server.ts` at `/api/auth/*splat` (Express v5), before `express.json()`.
+- Route/session protection is done with `src/presentation/middleware/require-session.ts` using `auth.api.getSession(...)`.
+- Store authenticated context in `request.auth` (type augmentation in `src/presentation/types/express.d.ts`).
+- Existing verification endpoints:
+  - Public: `GET /api/public/ping`
+  - Protected: `GET /api/private/me`
+- Required env vars for auth flow:
+  - `BETTER_AUTH_SECRET`
+  - `BETTER_AUTH_URL`
+  - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (for Google OAuth)
+- In Docker dev (`docker-compose.yml`), `/app/node_modules` is an anonymous volume; run `pnpm install --frozen-lockfile` in entrypoint before migrations to avoid missing packages (e.g. `better-auth`).
+- For auth schema changes, keep Drizzle migration flow:
+  - `pnpm db:generate`
+  - `pnpm db:migrate`
