@@ -8,6 +8,20 @@
       "when": 1770145101506,
       "tag": "0000_boring_sersi",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770924724452,
+      "tag": "0001_unknown_robin_chapel",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770928287802,
+      "tag": "0002_peaceful_vanisher",
+      "breakpoints": true
     }
   ]
 }
