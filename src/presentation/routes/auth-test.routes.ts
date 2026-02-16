@@ -8,5 +8,5 @@ import { requireSession } from '../middleware/require-session.js';
 
 export const authRouter = Router();
 
-authRouter.get('/api/public/ping', publicPingHandler);
-authRouter.get('/api/private/me', requireSession, privateMeHandler);
+authRouter.get('/public/ping', publicPingHandler);
+authRouter.get('/private/me', requireSession, privateMeHandler);

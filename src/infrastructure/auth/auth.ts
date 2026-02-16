@@ -4,10 +4,12 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { validConfig } from '../../config.js';
 import { getDatabase } from '../database/database.js';
 import * as schema from '../database/schema.js';
+import { sendEmail } from '../email/email-service.js';
 
 export const auth = betterAuth({
   baseURL: validConfig.betterAuthUrl,
   secret: validConfig.betterAuthSecret,
+  trustedOrigins: validConfig.trustedOrigins,
   database: drizzleAdapter(getDatabase(), {
     provider: 'pg',
     schema: {
@@ -19,6 +21,16 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 8,
+    resetPasswordTokenExpiresIn: 1800,
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmail({
+        to: user.email,
+        subject: 'Restablece tu contraseña',
+        html: `<p>Haz clic para restablecer tu contraseña:</p><a href="${url}">${url}</a>`,
+      });
+    },
   },
   socialProviders: {
     ...(validConfig.googleClientId && validConfig.googleClientSecret

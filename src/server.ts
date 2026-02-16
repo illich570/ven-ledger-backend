@@ -27,8 +27,13 @@ app.use(
   }),
 );
 
+// Infra routes (no /api prefix)
 app.use(healthRouter);
-app.use(authRouter);
+
+// All business routes behind /api
+const apiRouter = express.Router();
+apiRouter.use(authRouter);
+app.use('/api', apiRouter);
 
 app.use(errorHandler);
 
