@@ -1,49 +1,42 @@
-import { toNodeHandler } from 'better-auth/node';
-import express from 'express';
-import { pinoHttp } from 'pino-http';
-
-import { createServer } from './app.js';
+import { createApp } from './app.js';
+import { GetDocumentsUseCase } from './application/use-cases/get-documents.use-case.js';
 import { validConfig } from './config.js';
-import { initializeDatabase } from './infrastructure/database/database.js';
+import { createAuth } from './infrastructure/auth/auth.js';
+import {
+  closeDatabase,
+  getDatabase,
+  initializeDatabase,
+} from './infrastructure/database/database.js';
+import { DrizzleDocumentRepository } from './infrastructure/database/repositories/document.repository.js';
+import { ResendEmailService } from './infrastructure/email/email-service.js';
 import logger from './infrastructure/logger/pino-logger.js';
-import { errorHandler } from './presentation/middleware/error-handler.js';
-import { authRouter } from './presentation/routes/auth-test.routes.js';
-import { healthRouter } from './presentation/routes/health.routes.js';
+
 await initializeDatabase();
 
-const { auth } = await import('./infrastructure/auth/auth.js');
-
-const app = createServer();
-
-// Better Auth handler before express.json() (per Better Auth Express docs)
-// Express v5 requires named wildcard (e.g. *splat) for catch-all
-app.all('/api/auth/*splat', (request, response) =>
-  toNodeHandler(auth)(request, response),
+const emailService = new ResendEmailService(
+  validConfig.resendApiKey,
+  validConfig.emailFrom,
 );
-app.use(express.json());
-app.use(
-  pinoHttp({
-    logger,
-  }),
-);
+const auth = createAuth({ emailService });
 
-// Infra routes (no /api prefix)
-app.use(healthRouter);
+const documentRepository = new DrizzleDocumentRepository(getDatabase());
+const getDocuments = new GetDocumentsUseCase(documentRepository);
 
-// All business routes behind /api
-const apiRouter = express.Router();
-apiRouter.use(authRouter);
-app.use('/api', apiRouter);
-
-app.use(errorHandler);
+const app = createApp({
+  auth,
+  logger,
+  trustedOrigins: validConfig.trustedOrigins,
+  getDocuments,
+});
 
 const server = app.listen(validConfig.port, () => {
-  console.log(`Server alive! Running on PORT: ${validConfig.port}`);
+  logger.info(`Server alive! Running on PORT: ${validConfig.port}`);
 });
 
 process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
-  server.close(() => {
-    console.log('HTTP server closed');
+  logger.info('SIGTERM signal received: closing HTTP server');
+  server.close(async () => {
+    await closeDatabase();
+    logger.info('HTTP server and database pool closed');
   });
 });

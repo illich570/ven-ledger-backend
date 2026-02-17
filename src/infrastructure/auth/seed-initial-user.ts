@@ -2,10 +2,19 @@ import { count } from 'drizzle-orm';
 
 import { validDatabaseConfig } from '#config/database-config.js';
 
+import { validConfig } from '../../config.js';
 import { getDatabase } from '../database/database.js';
 import { user } from '../database/schema.js';
+import { ResendEmailService } from '../email/email-service.js';
 import logger from '../logger/pino-logger.js';
-import { auth } from './auth.js';
+import { createAuth } from './auth.js';
+
+const auth = createAuth({
+  emailService: new ResendEmailService(
+    validConfig.resendApiKey,
+    validConfig.emailFrom,
+  ),
+});
 
 /**
  * Idempotent seed: creates one initial user only when the user table is empty.
