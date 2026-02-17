@@ -63,6 +63,35 @@ Use `pnpm` (see `packageManager` in `package.json`).
     have consumers import from the config module instead of reading
     `process.env`.
 
+## Paradigm Convention (Class vs Functional)
+
+Follow this convention so the codebase stays consistent and scales predictably.
+
+- **Use classes for:**
+  - **Use cases** (`src/application/use-cases/`): One class per use case,
+    constructor injection of domain ports, single public `execute()` method.
+  - **Infrastructure adapters** (`src/infrastructure/**/`): Any service that
+    implements a domain port (DB repositories, email, external APIs, etc.) must
+    be a class with constructor injection (e.g. `DrizzleDocumentRepository`,
+    `ResendEmailService`).
+  - **Custom errors** (`src/infrastructure/`): Classes extending `Error` or
+    `AppError` (e.g. `AppError`, `ValidationError`).
+
+- **Use a functional style (no classes) for:**
+  - **Domain layer**: Entities and ports are TypeScript interfaces/types only.
+  - **Presentation layer**: Routes, handlers, and middleware are factory
+    functions (e.g. `createXRouter(deps)`, `createXHandlers(deps)`).
+  - **Configuration**: Zod schemas and validated exports in `src/config.ts` and
+    `src/config/`.
+  - **Infrastructure bootstrap**: Module-level setup that creates instances for
+    injection (e.g. `database.ts`, `pino-logger.ts`, `auth.ts` as
+    `createAuth({ emailService })`).
+  - **Entry points**: `server.ts` and `app.ts` as functional composition roots.
+  - **Schemas, utilities, scripts**: Pure functions and declarative definitions.
+
+Summary: **Classes** = use cases + adapters implementing ports + errors.
+**Functional** = everything else.
+
 ## Instructions for Development & Learning
 
 - Every question related to implement, updgrade, fix, or improve needs to be

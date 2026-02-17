@@ -6,7 +6,6 @@
 import { initializeDatabase } from '../infrastructure/database/database.js';
 
 await initializeDatabase();
-await import('../infrastructure/auth/auth.js');
 const { seedInitialUser } = await import(
   '../infrastructure/auth/seed-initial-user.js'
 );

@@ -23,6 +23,14 @@ export async function initializeDatabase() {
 }
 
 export function getDatabase() {
-  if (!database) throw new AppError('Database not initialized!', 400);
+  if (!database) throw new AppError('Database not initialized!', 500);
   return database;
+}
+
+export async function closeDatabase(): Promise<void> {
+  if (pool) {
+    await pool.end();
+    pool = undefined;
+    database = undefined;
+  }
 }
