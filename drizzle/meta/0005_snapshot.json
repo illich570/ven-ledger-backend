@@ -93,12 +93,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -168,12 +164,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -183,9 +175,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -429,12 +419,8 @@
           "name": "clients_accountants_client_id_user_id_fk",
           "tableFrom": "clients_accountants",
           "tableTo": "user",
-          "columnsFrom": [
-            "client_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["client_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -442,12 +428,8 @@
           "name": "clients_accountants_accountant_id_user_id_fk",
           "tableFrom": "clients_accountants",
           "tableTo": "user",
-          "columnsFrom": [
-            "accountant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["accountant_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -455,12 +437,8 @@
           "name": "clients_accountants_created_by_user_id_fk",
           "tableFrom": "clients_accountants",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -468,12 +446,8 @@
           "name": "clients_accountants_modified_by_user_id_fk",
           "tableFrom": "clients_accountants",
           "tableTo": "user",
-          "columnsFrom": [
-            "modified_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["modified_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -570,12 +544,8 @@
           "name": "category_documents_created_by_user_id_fk",
           "tableFrom": "category_documents",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -583,12 +553,8 @@
           "name": "category_documents_modified_by_user_id_fk",
           "tableFrom": "category_documents",
           "tableTo": "user",
-          "columnsFrom": [
-            "modified_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["modified_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -697,12 +663,8 @@
           "name": "documents_type_id_type_documents_id_fk",
           "tableFrom": "documents",
           "tableTo": "type_documents",
-          "columnsFrom": [
-            "type_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["type_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -710,12 +672,8 @@
           "name": "documents_created_by_user_id_fk",
           "tableFrom": "documents",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -723,12 +681,8 @@
           "name": "documents_modified_by_user_id_fk",
           "tableFrom": "documents",
           "tableTo": "user",
-          "columnsFrom": [
-            "modified_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["modified_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -736,12 +690,8 @@
           "name": "documents_category_id_category_documents_id_fk",
           "tableFrom": "documents",
           "tableTo": "category_documents",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -850,12 +800,8 @@
           "name": "type_documents_category_id_category_documents_id_fk",
           "tableFrom": "type_documents",
           "tableTo": "category_documents",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -863,12 +809,8 @@
           "name": "type_documents_created_by_user_id_fk",
           "tableFrom": "type_documents",
           "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -876,12 +818,8 @@
           "name": "type_documents_modified_by_user_id_fk",
           "tableFrom": "type_documents",
           "tableTo": "user",
-          "columnsFrom": [
-            "modified_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["modified_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
