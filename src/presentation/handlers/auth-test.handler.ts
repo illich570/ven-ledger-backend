@@ -21,3 +21,22 @@ export function privateMeHandler(request: Request, response: Response): void {
     },
   });
 }
+
+export function adminOnlyHandler(request: Request, response: Response): void {
+  response.json({
+    message: 'Admin access granted',
+    role: request.auth?.user?.role,
+    timestamp: new Date().toISOString(),
+  });
+}
+
+export function accountantOnlyHandler(
+  request: Request,
+  response: Response,
+): void {
+  response.json({
+    message: 'Accountant access granted',
+    role: request.auth?.user?.role,
+    timestamp: new Date().toISOString(),
+  });
+}

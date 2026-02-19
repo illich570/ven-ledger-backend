@@ -22,6 +22,34 @@
       "when": 1770928287802,
       "tag": "0002_peaceful_vanisher",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1771443569200,
+      "tag": "0003_material_roland_deschain",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1771445978940,
+      "tag": "0004_wandering_hairball",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1771448926872,
+      "tag": "0005_young_mister_fear",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1771450000000,
+      "tag": "0006_rename_roles_client_accountant",
+      "breakpoints": true
     }
   ]
 }
