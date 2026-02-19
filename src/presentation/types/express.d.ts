@@ -8,6 +8,7 @@ declare global {
           name: string;
           email: string;
           image?: string | null;
+          role?: string | null;
         };
         session: { id: string; userId: string; expiresAt: Date; token: string };
       };

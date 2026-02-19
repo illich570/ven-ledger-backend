@@ -1,10 +1,8 @@
-import type { betterAuth } from 'better-auth';
 import { fromNodeHeaders } from 'better-auth/node';
 import type { NextFunction, Request, Response } from 'express';
 
 import { AppError } from '../../infrastructure/app-error.js';
-
-type Auth = ReturnType<typeof betterAuth>;
+import type { Auth } from '../../infrastructure/auth/auth.js';
 
 export function createRequireSession(auth: Auth) {
   return async function requireSession(

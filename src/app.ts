@@ -1,4 +1,3 @@
-import type { betterAuth } from 'better-auth';
 import { toNodeHandler } from 'better-auth/node';
 import cors from 'cors';
 import express from 'express';
@@ -6,13 +5,14 @@ import type { Logger } from 'pino';
 import { pinoHttp } from 'pino-http';
 
 import type { GetDocumentsUseCase } from './application/use-cases/get-documents.use-case.js';
+import type { Auth } from './infrastructure/auth/auth.js';
 import { createErrorHandler } from './presentation/middleware/error-handler.js';
+import { createRequireRole } from './presentation/middleware/require-role.js';
 import { createRequireSession } from './presentation/middleware/require-session.js';
+import { createAdminUsersRouter } from './presentation/routes/admin-users.routes.js';
 import { createAuthTestRouter } from './presentation/routes/auth-test.routes.js';
 import { createDocumentRouter } from './presentation/routes/document.routes.js';
 import { healthRouter } from './presentation/routes/health.routes.js';
-
-export type Auth = ReturnType<typeof betterAuth>;
 
 export interface AppDependencies {
   auth: Auth;
@@ -52,6 +52,12 @@ export function createApp({
   const apiRouter = express.Router();
   const requireSession = createRequireSession(auth);
   apiRouter.use(createAuthTestRouter(requireSession));
+  apiRouter.use(
+    '/admin',
+    requireSession,
+    createRequireRole('admin'),
+    createAdminUsersRouter(auth),
+  );
   apiRouter.use(createDocumentRouter(getDocuments));
   app.use('/api', apiRouter);
 

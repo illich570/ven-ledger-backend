@@ -1,10 +1,10 @@
-import { count } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 
 import { validDatabaseConfig } from '#config/database-config.js';
 
 import { validConfig } from '../../config.js';
 import { getDatabase } from '../database/database.js';
-import { user } from '../database/schema.js';
+import { user } from '../database/schema/index.js';
 import { ResendEmailService } from '../email/email-service.js';
 import logger from '../logger/pino-logger.js';
 import { createAuth } from './auth.js';
@@ -40,13 +40,20 @@ export async function seedInitialUser(): Promise<void> {
     );
   }
 
-  await auth.api.signUpEmail({
+  const { user: createdUser } = await auth.api.signUpEmail({
     body: {
       name: seedUserName,
       email: seedUserEmail,
       password: seedUserPassword,
     },
   });
+
+  if (createdUser?.id) {
+    await database
+      .update(user)
+      .set({ role: 'admin' })
+      .where(eq(user.id, createdUser.id));
+  }
 
   logger.info(
     { email: seedUserEmail },

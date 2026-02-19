@@ -1,7 +1,7 @@
 # Repository Guidelines
 
-- If a rule is not explicitly defined here, DO NOT assume modern defaults.
-- Ask or follow existing project patterns instead.
+- If a rule is not explicitly defined here, DO NOT assume modern defaults Ask or
+  follow existing project patterns instead.
 
 ## Project Structure & Module Organization
 
@@ -91,6 +91,22 @@ Follow this convention so the codebase stays consistent and scales predictably.
 
 Summary: **Classes** = use cases + adapters implementing ports + errors.
 **Functional** = everything else.
+
+## Authentication & RBAC
+
+- Auth is handled by Better Auth in `src/infrastructure/auth/auth.ts` (see also
+  `.cursor/rules/auth-backend-context.mdc` for mount path, env vars, and session
+  middleware).
+- **Roles** are global app-level: `admin`, `accountant`, `client`. Defined in
+  `src/infrastructure/auth/permissions.ts` via `createAccessControl` and passed
+  into the Better Auth **admin** plugin. New signups get
+  `defaultRole: 'client'`.
+- The `user` table has a `role` column; `request.auth.user.role` is set after
+  `requireSession` and typed in `src/presentation/types/express.d.ts`.
+- To protect routes by role, use `createRequireRole(...allowedRoles)` from
+  `src/presentation/middleware/require-role.ts` **after** `requireSession` (e.g.
+  `requireSession, createRequireRole('admin')`). Add custom resource/actions in
+  `permissions.ts` when you need permission-based checks.
 
 ## Instructions for Development & Learning
 

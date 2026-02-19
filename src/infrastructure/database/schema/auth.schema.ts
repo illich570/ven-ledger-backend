@@ -1,19 +1,5 @@
-import {
-  boolean,
-  pgTable,
-  serial,
-  timestamp,
-  varchar,
-} from 'drizzle-orm/pg-core';
+import { boolean, pgTable, timestamp, varchar } from 'drizzle-orm/pg-core';
 
-// Application tables
-export const documents = pgTable('documents', {
-  id: serial('id').primaryKey(),
-  name: varchar('name', { length: 255 }).notNull(),
-  createdAt: timestamp('created_at').defaultNow(),
-});
-
-// Better Auth core tables: schema keys must be camelCase (adapter expects them); DB columns stay snake_case
 export const user = pgTable('user', {
   id: varchar('id', { length: 255 }).primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),

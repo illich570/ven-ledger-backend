@@ -1,10 +1,15 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { admin as adminPlugin } from 'better-auth/plugins';
+import type { AdminOptions } from 'better-auth/plugins/admin';
 
 import { validConfig } from '../../config.js';
 import type { EmailServicePort } from '../../domain/ports/email-service.port.js';
 import { getDatabase } from '../database/database.js';
-import * as schema from '../database/schema.js';
+import * as schema from '../database/schema/index.js';
+import { ac, accountant, admin, client } from './permissions.js';
+
+export type Auth = ReturnType<typeof createAuth>;
 
 export function createAuth({
   emailService,
@@ -47,5 +52,12 @@ export function createAuth({
           }
         : {}),
     },
+    plugins: [
+      adminPlugin({
+        ac,
+        roles: { admin, accountant, client } as AdminOptions['roles'],
+        defaultRole: 'client',
+      }),
+    ],
   });
 }
