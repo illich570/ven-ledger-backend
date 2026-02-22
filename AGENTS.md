@@ -111,5 +111,5 @@ Summary: **Classes** = use cases + adapters implementing ports + errors.
 ## Instructions for Development & Learning
 
 - Every question related to implement, updgrade, fix, or improve needs to be
-  aimed to comply an clean archictecture, in the current context (typescript,
-  drizzle, expressjs)
+  aimed to comply an clean archictecture + adapter/ports, in the current context
+  (typescript, drizzle, expressjs)

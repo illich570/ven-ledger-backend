@@ -50,6 +50,13 @@
       "when": 1771450000000,
       "tag": "0006_rename_roles_client_accountant",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1771784354351,
+      "tag": "0007_typical_stingray",
+      "breakpoints": true
     }
   ]
 }

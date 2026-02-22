@@ -4,7 +4,7 @@ import { Pool } from 'pg';
 import { validDatabaseConfig } from '#config/database-config.js';
 
 import { AppError } from '../app-error.js';
-import * as schema from './schema.js';
+import * as schema from './schema/index.js';
 
 let pool: Pool | undefined;
 let database: ReturnType<typeof drizzle> | undefined;

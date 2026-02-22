@@ -1,7 +1,54 @@
+# VCS
 .git
+.gitignore
+.gitattributes
+
+# Dependencies and build output (managed inside the image)
 node_modules
 dist
 pnpm-store
+.pnpm-store
+
+# Logs
 *.log
+logs/
+
+# Test and coverage
+coverage/
+**/*.test.ts
+
+# Environment files (never bake secrets into the image)
+.env
+.env.*
+!.env.example
+
+# Editor and IDE config
+.vscode/
+.cursor/
+.editorconfig
+
+# CI/CD
+.github/
+
+# Tooling config (not needed at runtime)
+eslint.config.ts
+prettier.config.js
+jest.config.js
+.husky/
+lint-staged.config.*
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Documentation
+*.md
+!drizzle/**/*.md
+
+# Docker meta (no need to send to daemon)
 Dockerfile
 .dockerignore
+
+# Agent / skills
+.agents/
+skills-lock.json
+AGENTS.md

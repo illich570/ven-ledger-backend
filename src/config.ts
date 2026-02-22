@@ -31,6 +31,13 @@ const ConfigSchema = z.object({
     .string()
     .optional()
     .transform(v => v?.trim() || 'onboarding@resend.dev'),
+  cloudflareAccountId: z.string(),
+  accessKeyId: z.string(),
+  secretAccessKey: z.string(),
+  bucketName: z.string(),
+  puppeteerExecutablePath: z.string(),
+  pdfMaxConcurrency: z.string().transform(Number),
+  templateViewsDir: z.string().optional(),
 });
 
 const validConfig = ConfigSchema.parse({
@@ -45,6 +52,13 @@ const validConfig = ConfigSchema.parse({
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
   resendApiKey: process.env.RESEND_API_KEY,
   emailFrom: process.env.EMAIL_FROM,
+  cloudflareAccountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  bucketName: process.env.BUCKET_NAME,
+  puppeteerExecutablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+  pdfMaxConcurrency: process.env.PDF_MAX_CONCURRENCY,
+  templateViewsDir: process.env.TEMPLATE_VIEWS_DIR,
 });
 
 export { validConfig };

@@ -1,9 +1,12 @@
 import { eq } from 'drizzle-orm';
 
 import type { Document } from '../../../domain/entities/document.entity.js';
-import type { DocumentRepository } from '../../../domain/ports/document-repository.port.js';
+import type {
+  CreateDocumentInput,
+  DocumentRepository,
+} from '../../../domain/ports/document-repository.port.js';
 import { getDatabase } from '../database.js';
-import { documents } from '../schema.js';
+import { documents } from '../schema/index.js';
 
 type Database = ReturnType<typeof getDatabase>;
 
@@ -24,10 +27,10 @@ export class DrizzleDocumentRepository implements DocumentRepository {
     return row ? this.toDomain(row) : undefined;
   }
 
-  async create(name: string): Promise<Document> {
+  async create(input: CreateDocumentInput): Promise<Document> {
     const rows = await this.database
       .insert(documents)
-      .values({ name })
+      .values(input)
       .returning();
     return this.toDomain(rows[0]!);
   }
@@ -35,8 +38,12 @@ export class DrizzleDocumentRepository implements DocumentRepository {
   private toDomain(row: typeof documents.$inferSelect): Document {
     return {
       id: row.id,
-      name: row.name,
-      createdAt: row.createdAt ?? new Date(),
+      createdAt: row.createdAt,
+      categoryId: row.categoryId,
+      createdBy: row.createdBy,
+      holderId: row.holderId,
+      typeId: row.typeId,
+      keyName: row.keyName,
     };
   }
 }

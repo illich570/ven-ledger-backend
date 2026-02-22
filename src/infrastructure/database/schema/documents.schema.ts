@@ -63,14 +63,13 @@ export const documents = pgTable(
       .references(() => typeDocuments.id)
       .notNull(),
     keyName: varchar('key_name', { length: 256 }).notNull(),
-    holderId: integer('holder_id').notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    holderId: varchar('holder_id', { length: 256 }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
     createdBy: varchar('created_by', { length: 255 })
       .references(() => user.id)
       .notNull(),
-    modifiedBy: varchar('modified_by', { length: 255 }).references(
-      () => user.id,
-    ),
     isActive: integer('is_active').notNull().default(1).$type<0 | 1 | 2>(), // 0: Inactive, 1: Active, 2: Deleted
     categoryId: integer('category_id')
       .notNull()

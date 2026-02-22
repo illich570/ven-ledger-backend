@@ -4,6 +4,7 @@ import express from 'express';
 import type { Logger } from 'pino';
 import { pinoHttp } from 'pino-http';
 
+import type { GenerateDocumentUseCase } from './application/use-cases/generate-document.use-case.js';
 import type { GetDocumentsUseCase } from './application/use-cases/get-documents.use-case.js';
 import type { Auth } from './infrastructure/auth/auth.js';
 import { createErrorHandler } from './presentation/middleware/error-handler.js';
@@ -19,6 +20,7 @@ export interface AppDependencies {
   logger: Logger;
   trustedOrigins: string[];
   getDocuments: GetDocumentsUseCase;
+  generateDocument: GenerateDocumentUseCase;
 }
 
 export function createApp({
@@ -26,6 +28,7 @@ export function createApp({
   logger,
   trustedOrigins,
   getDocuments,
+  generateDocument,
 }: AppDependencies): express.Express {
   const app = express();
 
@@ -58,7 +61,10 @@ export function createApp({
     createRequireRole('admin'),
     createAdminUsersRouter(auth),
   );
-  apiRouter.use(createDocumentRouter(getDocuments));
+  apiRouter.use(
+    requireSession,
+    createDocumentRouter(getDocuments, generateDocument),
+  );
   app.use('/api', apiRouter);
 
   app.use(createErrorHandler(logger));
