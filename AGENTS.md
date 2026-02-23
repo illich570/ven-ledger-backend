@@ -51,8 +51,9 @@ Use `pnpm` (see `packageManager` in `package.json`).
 
 - Runtime config is loaded from environment variables in `src/config.ts` using
   `dotenv` + `zod`.
-- Required variables: `NODE_ENV`, `PORT`, `LOG_LEVEL`, `LOG_FILE`. Consider
-  using a local `.env` file for development.
+- Required variables: `NODE_ENV`, `PORT`, `LOG_LEVEL`. Optional: `LOG_FILE`
+  (default `server.log`; only used in development). Consider using a local
+  `.env` file for development.
 - **Never use `process.env` directly.** All environment variables must pass
   through the config schemas validated with Zod:
   - `src/config.ts` (`validConfig`): app/server config (auth, logging, port,
@@ -111,5 +112,5 @@ Summary: **Classes** = use cases + adapters implementing ports + errors.
 ## Instructions for Development & Learning
 
 - Every question related to implement, updgrade, fix, or improve needs to be
-  aimed to comply an clean archictecture, in the current context (typescript,
-  drizzle, expressjs)
+  aimed to comply an clean archictecture + adapter/ports, in the current context
+  (typescript, drizzle, expressjs)

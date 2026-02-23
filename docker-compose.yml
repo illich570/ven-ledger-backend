@@ -12,9 +12,15 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres -d ven_ledger']
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
     restart: unless-stopped
 
   app:
@@ -30,6 +36,7 @@ services:
       # Container-specific configuration (not meant to be overridden via .env)
       DB_URL: postgresql://postgres:postgres@postgres:5432/ven_ledger
       NODE_ENV: development
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
     env_file:
       - .env # PORT, LOG_LEVEL, LOG_FILE - developer-configurable
     entrypoint: ['/app/scripts/docker-entrypoint.sh']
@@ -38,6 +45,22 @@ services:
       - /app/node_modules
     ports:
       - '${PORT}:3000'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget --no-verbose --tries=1 --spider http://localhost:3000/health ||
+          exit 1',
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: '20m'
+        max-file: '5'
     restart: unless-stopped
 
 volumes:
