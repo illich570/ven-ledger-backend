@@ -7,7 +7,22 @@ const ConfigSchema = z.object({
   env: z.enum(['development', 'test', 'production']),
   port: z.string().transform(Number),
   logLevel: z.string(),
-  logFile: z.string(),
+  logFile: z
+    .string()
+    .optional()
+    .transform(v => v?.trim() || 'server.log'),
+  serviceName: z
+    .string()
+    .optional()
+    .transform(v => v?.trim() || 'ven-ledger-backend'),
+  appVersion: z
+    .string()
+    .optional()
+    .transform(v => v?.trim() || '1.0.0'),
+  logtailSourceToken: z
+    .string()
+    .optional()
+    .transform(v => v?.trim() || undefined),
   betterAuthSecret: z.string().min(1, 'BETTER_AUTH_SECRET is required'),
   betterAuthUrl: z
     .string()
@@ -45,6 +60,9 @@ const validConfig = ConfigSchema.parse({
   port: process.env.PORT,
   logLevel: process.env.LOG_LEVEL,
   logFile: process.env.LOG_FILE,
+  serviceName: process.env.SERVICE_NAME,
+  appVersion: process.env.APP_VERSION,
+  logtailSourceToken: process.env.LOGTAIL_SOURCE_TOKEN,
   betterAuthSecret: process.env.BETTER_AUTH_SECRET,
   betterAuthUrl: process.env.BETTER_AUTH_URL,
   trustedOrigins: process.env.TRUSTED_ORIGINS,

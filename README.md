@@ -62,7 +62,8 @@ The application uses the following environment variables. Configure them in your
 | `NODE_ENV`                | Yes         | Application environment                | `development` \| `test` \| `production`     |
 | `PORT`                    | Yes         | Server listening port                  | `3000` (Railway injects this automatically) |
 | `LOG_LEVEL`               | Yes         | Logging verbosity                      | `debug` \| `info` \| `warn` \| `error`      |
-| `LOG_FILE`                | Yes         | Path to log file                       | `server.log`                                |
+| `LOG_FILE`                | Optional    | Log file path (development only)       | `server.log`                                |
+| `LOGTAIL_SOURCE_TOKEN`    | Optional    | Better Stack token for prod logs       | (omit for Railway-only stdout)              |
 | `DB_URL` / `DATABASE_URL` | Yes         | PostgreSQL connection (one of the two) | `postgresql://user:pass@host:5432/dbname`   |
 | `BETTER_AUTH_SECRET`      | Yes         | Secret for signing cookies/tokens      | 32+ character random string                 |
 | `BETTER_AUTH_URL`         | Yes (prod)  | Public base URL of the app             | `https://your-app.railway.app`              |
@@ -319,7 +320,7 @@ To deploy this application on Railway:
    - Go to your service settings → Variables
    - Add the following variables:
      - `LOG_LEVEL` (e.g., `info` for production)
-     - `LOG_FILE` (e.g., `server.log`)
+     - Optional: `LOGTAIL_SOURCE_TOKEN` for Better Stack log aggregation
      - `NODE_ENV=production`
    - `PORT` is automatically injected by Railway (no need to set it)
    - `DATABASE_URL` is automatically set if you added the PostgreSQL addon
@@ -377,6 +378,25 @@ DB_URL="your-staging-db-url" pnpm db:migrate
 # Production - prefer Railway pre-deploy, but if manual needed:
 DB_URL="your-production-internal-url" NODE_ENV=production pnpm db:migrate
 ```
+
+## Observability
+
+**Logging (Railway):** Logs are written as JSON to stdout. Railway captures this
+output for viewing in the Log Explorer and deployment panels. No `LOG_FILE` is
+needed in production.
+
+**Optional: Better Stack (Logtail):** For retention, search, and alerting beyond
+Railway’s built-in logs, set `LOGTAIL_SOURCE_TOKEN` with a source token from
+[Better Stack](https://betterstack.com/docs/logs/javascript/pino). Logs are
+duplicated to stdout (Railway) and to Better Stack.
+
+**Correlation:** Each HTTP request has a `requestId` (and `X-Request-Id`
+response header). Use it to correlate logs across the request lifecycle.
+
+**Alerts & dashboards:** See [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) for
+Better Stack alert rules and dashboard setup. After deploy, run
+`SERVICE_URL=... ./scripts/smoke-observability.sh` to verify request
+correlation.
 
 ## License
 

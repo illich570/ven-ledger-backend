@@ -13,9 +13,9 @@ export function createDocumentRouter(
   const router = Router();
   const handlers = createDocumentHandlers(getDocuments, generateDocument);
 
-  router.get('/documents', handlers.getAll);
+  router.get('/', handlers.getAll);
   router.post(
-    '/documents/generate',
+    '/generate',
     validate({ body: generateDocumentBodySchema }),
     handlers.generateDocument,
   );
