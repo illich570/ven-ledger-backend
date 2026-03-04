@@ -1,7 +1,7 @@
-import type { DocumentRepository } from '../../domain/ports/document-repository.port.js';
-import type { FileStoragePort } from '../../domain/ports/file-storage.port.js';
-import type { PdfGeneratorPort } from '../../domain/ports/pdf-generator.port.js';
-import type { TemplateRendererPort } from '../../domain/ports/template-renderer.port.js';
+import type { DocumentRepository } from '../../../domain/ports/document-repository.port.js';
+import type { FileStoragePort } from '../../../domain/ports/file-storage.port.js';
+import type { PdfGeneratorPort } from '../../../domain/ports/pdf-generator.port.js';
+import type { TemplateRendererPort } from '../../../domain/ports/template-renderer.port.js';
 
 export interface GenerateDocumentUseCaseInput {
   documentHolderId: string;
@@ -22,10 +22,15 @@ export class GenerateDocumentUseCase {
   async execute(input: GenerateDocumentUseCaseInput): Promise<object> {
     const keyName = `${input.documentHolderId}-${input.createdBy}.pdf`;
 
-    const html = await this.templateRenderer.render(
-      'document-testing.eta',
-      input.templateData,
-    );
+    const imageSource = await this.fileStorage.getSignedUrl({
+      bucket: this.bucketName,
+      key: `logos/${input.createdBy}.jpg`,
+    });
+
+    const html = await this.templateRenderer.render('document-testing.eta', {
+      ...input.templateData,
+      imageSource,
+    });
 
     const pdfBuffer = await this.pdfGenerator.htmlToPdf({ html });
 

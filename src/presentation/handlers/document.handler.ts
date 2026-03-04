@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 
-import type { GenerateDocumentUseCase } from '../../application/use-cases/generate-document.use-case.js';
-import type { GetDocumentsUseCase } from '../../application/use-cases/get-documents.use-case.js';
+import type { GenerateDocumentUseCase } from '../../application/documents/use-cases/generate-document.use-case.js';
+import type { GetDocumentsUseCase } from '../../application/documents/use-cases/get-documents.use-case.js';
 
 export function createDocumentHandlers(
   getDocuments: GetDocumentsUseCase,

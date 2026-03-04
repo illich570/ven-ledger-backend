@@ -1,3 +1,4 @@
+import { DrizzleUserRepository } from '#infrastructure/database/repositories/user.repository.js';
 import { CloudflareFileStorageService } from '#infrastructure/file-storage/cloudflare-file-service.js';
 import { PuppeteerBrowserManager } from '#infrastructure/pdf/puppeteer-browser.manager.js';
 import { PuppeteerPdfGeneratorService } from '#infrastructure/pdf/puppeteer-pdf-generator.service.js';
@@ -5,8 +6,9 @@ import { Semaphore } from '#infrastructure/pdf/semaphore.js';
 import { EtaTemplateRendererService } from '#infrastructure/templates/eta-template-renderer.service.js';
 
 import { createApp } from './app.js';
-import { GenerateDocumentUseCase } from './application/use-cases/generate-document.use-case.js';
-import { GetDocumentsUseCase } from './application/use-cases/get-documents.use-case.js';
+import { GenerateDocumentUseCase } from './application/documents/use-cases/generate-document.use-case.js';
+import { GetDocumentsUseCase } from './application/documents/use-cases/get-documents.use-case.js';
+import { UploadLogoUserUseCase } from './application/users/use-cases/upload-logo-user.use-case.js';
 import { validConfig } from './config.js';
 import { createAuth } from './infrastructure/auth/auth.js';
 import {
@@ -51,13 +53,18 @@ const generateDocument = new GenerateDocumentUseCase(
   r2Client,
   validConfig.bucketName,
 );
-
+const uploadLogo = new UploadLogoUserUseCase(
+  new DrizzleUserRepository(getDatabase()),
+  r2Client,
+  validConfig.bucketName,
+);
 const app = createApp({
   auth,
   logger,
   trustedOrigins: validConfig.trustedOrigins,
   getDocuments,
   generateDocument,
+  uploadLogo,
 });
 
 const server = app.listen(validConfig.port, () => {

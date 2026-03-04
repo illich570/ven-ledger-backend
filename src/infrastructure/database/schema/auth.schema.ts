@@ -9,6 +9,7 @@ export const user = pgTable('user', {
   role: varchar('role', { length: 255 }),
   banned: boolean('banned').default(false),
   banReason: varchar('ban_reason', { length: 512 }),
+  logoKeyName: varchar('logo_key_name', { length: 255 }),
   banExpires: timestamp('ban_expires'),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),

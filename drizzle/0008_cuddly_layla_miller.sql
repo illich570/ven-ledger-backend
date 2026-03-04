@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "logo_key_name" varchar(255);

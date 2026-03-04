@@ -6,8 +6,11 @@ import express from 'express';
 import type { Logger } from 'pino';
 import { pinoHttp } from 'pino-http';
 
-import type { GenerateDocumentUseCase } from './application/use-cases/generate-document.use-case.js';
-import type { GetDocumentsUseCase } from './application/use-cases/get-documents.use-case.js';
+import { createUsersRouter } from '#presentation/routes/users.routes.js';
+
+import type { GenerateDocumentUseCase } from './application/documents/use-cases/generate-document.use-case.js';
+import type { GetDocumentsUseCase } from './application/documents/use-cases/get-documents.use-case.js';
+import { UploadLogoUserUseCase } from './application/users/use-cases/upload-logo-user.use-case.js';
 import type { Auth } from './infrastructure/auth/auth.js';
 import { createErrorHandler } from './presentation/middleware/error-handler.js';
 import { createNotFoundHandler } from './presentation/middleware/not-found-handler.js';
@@ -24,6 +27,7 @@ export interface AppDependencies {
   trustedOrigins: string[];
   getDocuments: GetDocumentsUseCase;
   generateDocument: GenerateDocumentUseCase;
+  uploadLogo: UploadLogoUserUseCase;
 }
 
 export function createApp({
@@ -32,6 +36,7 @@ export function createApp({
   trustedOrigins,
   getDocuments,
   generateDocument,
+  uploadLogo,
 }: AppDependencies): express.Express {
   const app = express();
 
@@ -80,6 +85,7 @@ export function createApp({
     requireSession,
     createDocumentRouter(getDocuments, generateDocument),
   );
+  apiRouter.use('/users', requireSession, createUsersRouter(uploadLogo));
   app.use('/api', apiRouter);
 
   app.use(createNotFoundHandler());

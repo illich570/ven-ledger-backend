@@ -57,6 +57,13 @@
       "when": 1771784354351,
       "tag": "0007_typical_stingray",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1771973452420,
+      "tag": "0008_cuddly_layla_miller",
+      "breakpoints": true
     }
   ]
 }

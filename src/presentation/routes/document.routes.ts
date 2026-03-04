@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import type { GenerateDocumentUseCase } from '../../application/use-cases/generate-document.use-case.js';
-import type { GetDocumentsUseCase } from '../../application/use-cases/get-documents.use-case.js';
+import type { GenerateDocumentUseCase } from '../../application/documents/use-cases/generate-document.use-case.js';
+import type { GetDocumentsUseCase } from '../../application/documents/use-cases/get-documents.use-case.js';
 import { createDocumentHandlers } from '../handlers/document.handler.js';
 import { validate } from '../middleware/validate.js';
 import { generateDocumentBodySchema } from '../schemas/document.schemas.js';

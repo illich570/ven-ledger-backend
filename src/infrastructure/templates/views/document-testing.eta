@@ -83,6 +83,9 @@
 </head>
 
 <body>
-    <h1> de prueba! <%= it.title %></h1>
+	<div class="header">
+		<img src="<%= it.imageSrc %>" class="img"/>
+		<h1 class="titlePage"> de prueba! <%= it.title %></h1>
+	</div>
 </body>
 </html>
